@@ -7,10 +7,10 @@ let discussionSchema = new Schema({
 },{
     timestamps:true
 })
-discussionSchema.pre("deleteOne",async function(next){
-    for await (const message of this.messages) {
-        Message.findByIdAndDelete(message);
-    }
-    next();
+discussionSchema.pre("deleteOne",async function(){
+    const deletedMessages = this.messages.map((messageId)=>{
+        return Message.findByIdAndDelete(messageId);
+    })
+    await Promise.all(deletedMessages);
 })
 module.exports = model("Discussion",discussionSchema);
