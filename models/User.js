@@ -7,23 +7,24 @@ let Discussion = require("./Discussion");
 let userSchema = new Schema({
     firstName:{
         type:String,
-        required:true
+        required:false
     },
     lastName:{
         type:String,
-        required:true
+        required:false
     },
     email:{
         type:String,
-        required:true
+        required:false
     },
     password:{
         type:String,
-        required:true
+        required:false
     },
-    isLoggedIn:{
-        type:Boolean,
-        default:false
+    clerkId:{
+        type:String,
+        required:false,
+        unique:true
     },
     discussions:{
         type:[Schema.Types.ObjectId],
@@ -47,6 +48,9 @@ let userSchema = new Schema({
         type:[Schema.Types.ObjectId],
     },
     dislikedComments:{
+        type:[Schema.Types.ObjectId],
+    },
+    WorkSpaces:{
         type:[Schema.Types.ObjectId],
     }
 },{

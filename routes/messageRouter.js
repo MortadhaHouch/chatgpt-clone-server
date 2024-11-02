@@ -5,10 +5,7 @@ const Discussion = require("../models/Discussion");
 const Message = require("../models/Message");
 require("dotenv").config();
 const {clerkMiddleware} = require("@clerk/express");
-messageRouter.use(clerkMiddleware({
-    signInUrl:"/login",
-    signUpUrl:"/signup"
-}))
+const gemini = require("../config/gemini")
 messageRouter.get("/:id",async(req,res)=>{
     const {id} = req.params;
     const discussion = await Discussion.findById(id);
@@ -45,13 +42,21 @@ messageRouter.post("/add/:id",async(req,res)=>{
             const user = await User.findById(auth[1]);
             if(user){
                 if(discussion){
-                    const {content} = req.body;
-                    const message = await Message.create({
-                        content,
+                    const {message} = req.body;
+                    const response = await gemini(message);
+                    const userMessage = await Message.create({
+                        message,
                         from
                     })
-                    discussion.messages.push(message._id);
-                    await discussion.save();
+                    if(response){
+                        const createdMessage = await Message.create({
+                            response,
+                        })
+                        discussion.messages.push(userMessage._id);
+                        discussion.messages.push(createdMessage._id);
+                        await discussion.save();
+                        res.status(200).json({message:"message added successfully"});
+                    }
                 }
             }
         }

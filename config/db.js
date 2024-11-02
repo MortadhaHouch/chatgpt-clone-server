@@ -1,6 +1,6 @@
 let mongoose = require('mongoose')
 require("dotenv").config();
-export default async function connectToDb(){
+async function connectToDb(){
     try {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log("connected to db");
@@ -8,3 +8,4 @@ export default async function connectToDb(){
         console.log(error);
     }
 }
+module.exports = connectToDb
